@@ -1,0 +1,55 @@
+.loginForm {
+    background: rgba(40, 44, 52, 0.8);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(40, 44, 52, 0.3);
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    padding: 33px 20px 0px 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.loginForm .ant-form-item-label > label {
+    color: white;
+    font-weight: bold;
+}
+
+.loginForm .ant-input {
+    border: none;       
+    border-radius: 6px;
+}
+
+.loginForm .ant-input-password {
+    border: none;      
+    border-radius: 6px;
+}
+
+.loginForm .ant-btn-primary {
+    background-color: #2a56e6;     
+    border-color: #2a56e6;
+    padding: 0px 20px 0px 20px;
+    font-weight: bold;
+}
+
+.loginForm p{
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 0;
+}
+
+@media (max-width: 768px){
+    .loginForm{
+        max-width: 90%;
+    }
+}
+
+@media (min-width: 769px){
+    .loginForm{
+        min-height: 35%;
+        min-width: 50%;
+    }
+}
