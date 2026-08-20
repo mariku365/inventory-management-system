@@ -1,0 +1,10 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.dashboardContainer{
+    background-color: black;
+    display: flex;
+    min-height: 100vh;
+    color: white
+}
