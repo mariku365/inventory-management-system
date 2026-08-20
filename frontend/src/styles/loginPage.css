@@ -24,16 +24,11 @@
 }
 
 .App-header h3 {
-  font-size: 3rem;
+  font-size: 2.5rem;
   padding-bottom: 30px;
   margin-top: 0;
   text-align: center;
-
-  max-width: 100%;             /* ✅ ensures text respects container width */
-  word-wrap: break-word;       /* ✅ breaks long words */
-  overflow-wrap: break-word;   /* ✅ modern equivalent */
-  white-space: normal;         /* ✅ allows wrapping */
-  line-height: 1.2;            /* ✅ prevents overlap vertically */
+  max-width: 75%;
 }
 
 

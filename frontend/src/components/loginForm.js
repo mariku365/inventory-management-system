@@ -1,10 +1,23 @@
 import React from 'react';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import '../styles/loginForm.css'
+import axios from 'axios';
 
-const onFinish = values => {
-  console.log('Success:', values);
+const onFinish = async (values)  => {
+  try {
+    const res = await axios.post('/api/login', values);
+    if (res.data.success) {
+      message.success(res.data.message);
+      localStorage.setItem('token', res.data.token);
+      window.location.href = '/dashboard';
+    } else {
+      message.error(res.data.message);
+    }
+  } catch (err) {
+    message.error(err.response?.data?.message || 'Server error');
+  }
 };
+
 const onFinishFailed = errorInfo => {
   console.log('Failed:', errorInfo);
 };
