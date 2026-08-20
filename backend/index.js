@@ -2,10 +2,17 @@ require('dotenv').config();
 
 const authenticateToken = require("./authMiddleware");
 const express = require('express');
-const { connectDB } = require('./dbConnection');
+const cors = require('cors');
+const { sql, connectDB } = require('./dbConnection');
 
 const app = express();
 app.use(express.json());
+
+app.use(cors({
+    origin: 'http://localhost:3000',
+    method: ['GET','POST','PUT','DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
 
 connectDB();
 

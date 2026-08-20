@@ -6,7 +6,7 @@ const { sql } = require("../dbConnection");
 router.post('/', async (req, res) => {
     const {itemName, quantity, price} = req.body;
     try {
-        await sql.query(`INSERT INTO items(itemName, quantity, price) VALUES(${itemName}, ${quantity}, ${price})`);
+        await sql.query`INSERT INTO items(itemName, quantity, price) VALUES(${itemName}, ${quantity}, ${price})`;
         res.status(201).send('Item added successfully!');
     } catch (err) {
         res.status(500).send(err.message)
@@ -27,9 +27,9 @@ router.get('/', async (req, res) => {
 // UPDATE OPERATION
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const {itemName, quantity, price} = req.body;
+    const {quantity, price} = req.body;
     try {
-        await sql.query`UPDATE items(itemName, quantity, price) SET itemName = ${itemName}, quantity = ${quantity}, price = ${price} WHERE id = ${id}`;
+        await sql.query`UPDATE items SET quantity = ${quantity}, price = ${price} WHERE id = ${id}`;
         res.send('Item updated successfully!');
     } catch (err) {
         res.status(500).send(err.message)
@@ -41,7 +41,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        await sql.query(`DELETE * FROM items WHERE id = ${id}`);
+        await sql.query`DELETE FROM items WHERE id = ${id}`;
         res .send('Item deleted successfully!');
     } catch (err) {
         res.status(500).send(err.message)

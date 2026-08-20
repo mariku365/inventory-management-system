@@ -1,6 +1,8 @@
 import '../styles/dashboard.css';
 import Sidebar from '../components/sidebar';
 import { Navigate } from 'react-router-dom';
+import DashboardPage from '../components/dashboard';
+
 
 function Dashboard() {
   const token = localStorage.getItem('token');
@@ -10,8 +12,13 @@ function Dashboard() {
   }
   return (
     <div className="dashboardContainer">
-      <p>This is the dashboard page.</p>
-      <Sidebar />
+      <div classname>
+        <Sidebar />
+      </div>
+      <div>
+        <DashboardPage />
+      </div>
+      
     </div>
   );
 }

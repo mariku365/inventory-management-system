@@ -9,6 +9,7 @@ const onFinish = async (values)  => {
     if (res.data.success) {
       message.success(res.data.message);
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('username', res.data.username);
       window.location.href = '/dashboard';
     } else {
       message.error(res.data.message);
