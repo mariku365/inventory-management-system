@@ -15,7 +15,7 @@ function Dashboard() {
       <div classname>
         <Sidebar />
       </div>
-      <div>
+      <div className="dashboardContainter2">
         <DashboardPage />
       </div>
       

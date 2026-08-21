@@ -4,10 +4,66 @@
 }
 
 .dashboardContainer{
-    background-color: black;
     display: flex;
     min-height: 100vh;
-    color: white;
     flex-direction: row;
-    align-items: center;
+}
+
+.dashboardContainter2 {
+    background-color:#F5F5F5;
+    display: flex;
+    min-height: 100vh;
+    flex: 1;
+}
+
+.summaryCard {
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.summaryCard h2 {
+  font-size: 2.5rem;   /* ✅ custom size */
+  margin: 0;
+}
+
+.totalCard {
+  background-color: #e6f7ff; /* light blue */
+}
+
+.lowStockCard {
+  background-color: #fffbe6; /* light yellow */
+}
+
+.outStockCard {
+  background-color: #ffe6e6; /* light red */
+}
+
+.crudCard span{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 1.25rem;
+}
+
+.crudCard {
+    min-height: 25vh;
+    justify-content: center;
+    text-align: center;
+    font-size: 1rem
+}
+
+.reportsCard{
+    min-width: 50vw;
+    min-height: 25vh;
+    justify-content: center;
+    text-align: center;
+    font-size: 1rem 
+}
+
+.reportsCard span{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 1.25rem;
 }
