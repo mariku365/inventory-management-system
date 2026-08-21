@@ -12,7 +12,7 @@ function Dashboard() {
   }
   return (
     <div className="dashboardContainer">
-      <div classname>
+      <div>
         <Sidebar />
       </div>
       <div className="dashboardContainter2">

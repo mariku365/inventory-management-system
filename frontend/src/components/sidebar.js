@@ -5,8 +5,6 @@ import {
     MenuUnfoldOutlined, 
     MenuFoldOutlined,
     HomeOutlined,
-    BarChartOutlined,
-    SettingOutlined,
     LogoutOutlined
  } from '@ant-design/icons'
 
@@ -33,13 +31,11 @@ const Sidebar = () => {
 
       <ul className="menu">
         <li ><HomeOutlined className="icon"/>{isOpen && 'Dashboard'}</li>
-        <li ><BarChartOutlined className="icon"/>{isOpen && 'Reports'}</li>
-        <li ><SettingOutlined className="icon"/>{isOpen && 'Settings'}</li>
       </ul>
 
-       <div className="logout" onClick={handleLogout}>
-            <LogoutOutlined className="icon"/>{isOpen && 'Logout'}
-        </div>
+      <div className="logout" onClick={handleLogout}>
+        <LogoutOutlined className="icon"/>{isOpen && 'Logout'}
+      </div>
 
     </div>
   );

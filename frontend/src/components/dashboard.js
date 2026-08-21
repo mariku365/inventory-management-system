@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Modal, Form, Input, Button, Table, Space, message } from 'antd';
 import axios from 'axios';
 import Welcome from './welcome';
-import { SearchOutlined, PlusCircleOutlined, EditOutlined, CloudDownloadOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusCircleOutlined, EditOutlined, CloudDownloadOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import '../styles/dashboard.css'
 
 const DashboardPage = () => {
@@ -11,6 +11,7 @@ const DashboardPage = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+    const [recentActions, setRecentActions] = useState([]);
 
   const fetchItems = async () => {
     try {
@@ -31,46 +32,65 @@ const DashboardPage = () => {
     return () => clearInterval(interval); // cleanup
   }, []);
 
-  const handleAddItem = async (values) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post('http://localhost:3001/api/items', values, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      message.success('Item added!');
-      fetchItems();
-      setActiveModal(null);
-    } catch (err) {
-      message.error('Failed to add item');
-    }
-  };
+
+const handleAddItem = async (values) => {
+  try {
+    const token = localStorage.getItem('token');
+    await axios.post('http://localhost:3001/api/items', values, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    message.success('Item added!');
+    fetchItems();
+
+    setRecentActions(prev => [
+      {
+        name: username,
+        action: `Added ${values.itemName}`,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+      },
+      ...prev
+    ]);
+
+    setActiveModal(null);
+  } catch (err) {
+    message.error('Failed to add item');
+  }
+};
 
 
   const handleDeleteItem = async (id) => {
-    Modal.confirm({
-        title: 'Are you sure you want to remove this item?',
-        content: 'This action cannot be undone.',
-        okText: 'Delete',
-        okType: 'danger',
-        cancelText: 'Cancel',
-        onOk: async () => {
-            try {
-                const token = localStorage.getItem('token');
-                await axios.delete(`http://localhost:3001/api/items/${id}`,
-                    {
-                        headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
-                setItems(items.filter(item => item.id !== id));
-            } catch (err) {
-                console.error('Error deleting item:', err);
-            }
-        }
-    })
-  };
+  const itemToDelete = items.find(i => i.id === id);
 
+  Modal.confirm({
+    title: 'Are you sure you want to remove this item?',
+    content: 'This action cannot be undone.',
+    okText: 'Delete',
+    okType: 'danger',
+    cancelText: 'Cancel',
+    onOk: async () => {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`http://localhost:3001/api/items/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setItems(items.filter(item => item.id !== id));
+
+        setRecentActions(prev => [
+          {
+            name: username,
+            action: `Deleted ${itemToDelete?.itemName || 'Unknown Item'}`,
+            date: new Date().toLocaleDateString(),
+            time: new Date().toLocaleTimeString(),
+          },
+          ...prev
+        ]);
+      } catch (err) {
+        console.error('Error deleting item:', err);
+      }
+    }
+  });
+};
 
   const viewColumns = [
     { title: 'Item Name', dataIndex: 'itemName', key: 'itemName' },
@@ -128,61 +148,82 @@ const exportToPDF = (data) => {
   });
 };
 
+const activityColumns = [
+  { title: 'Name', dataIndex: 'name', key: 'name' },
+  { title: 'Action', dataIndex: 'action', key: 'action' },
+  { title: 'Date', dataIndex: 'date', key: 'date' },
+  { title: 'Time', dataIndex: 'time', key: 'time' },
+];
 
   return (
     <div style={{ padding: 20 }}>
       <Welcome username={username} />
 
+<Row gutter={16} className="columnContainer">
+  {/* Left side: summary + quick actions */}
+  <Col className="columnCard" span={14}>
+    {/* Summary Stats */}
     <Row gutter={16} style={{ marginBottom: 20 }}>
-        <Col span={8}>
-            <Card className="summaryCard totalCard" title="Available Stocks" bordered={false}>
-            <h2>{items.reduce((total, item) => total + item.quantity, 0)}</h2>
-            </Card>
-        </Col>
-        <Col span={8}>
-            <Card className="summaryCard lowStockCard" title="Low Stock (<5)" bordered={false}>
-            <h2>{items.filter(i => i.quantity < 5).length}</h2>
-            </Card>
-        </Col>
-        <Col span={8}>
-            <Card className="summaryCard outStockCard" title="Out of Stock" bordered={false}>
-            <h2>{items.filter(i => i.quantity === 0).length}</h2>
-            </Card>
-        </Col>
+      <Col span={8}>
+        <Card className="summaryCard totalCard" title="Available Stocks" bordered={false}>
+          <h2>{items.reduce((total, item) => total + item.quantity, 0)}</h2>
+        </Card>
+      </Col>
+      <Col span={8}>
+        <Card className="summaryCard lowStockCard" title="Low Stock (<5)" bordered={false}>
+          <h2>{items.filter(i => i.quantity < 5).length}</h2>
+        </Card>
+      </Col>
+      <Col span={8}>
+        <Card className="summaryCard outStockCard" title="Out of Stock" bordered={false}>
+          <h2>{items.filter(i => i.quantity === 0).length}</h2>
+        </Card>
+      </Col>
     </Row>
 
-
-      <Row gutter={16} style={{ marginBottom: 20 }}>
-        <Col span={8}>
-          <Card className="crudCard addCard" title={<span><PlusCircleOutlined style={{ marginRight: 8 }}/>Add Item</span>} hoverable onClick={() => setActiveModal('add')}>
-             Quickly add new stock to your inventory.
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card className="crudCard checkCard" title= {<span><SearchOutlined style={{ marginRight: 8 }}/> Check Stocks </span>} hoverable onClick={() => { fetchItems(); setActiveModal('stocks'); }}>
-            View current inventory levels.
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card className="crudCard editCard" title={<span><EditOutlined style={{ marginRight: 8 }}/>Update Item</span>} hoverable onClick={() => { fetchItems(); setActiveModal('update'); }}>
-            Edit or delete existing stock.
-          </Card>
-        </Col>
-      </Row>
-
-        <Row gutter={16}>
-            <Col span={8}>
-        <Card
-            className="reportsCard"
-            title={<span><CloudDownloadOutlined style={{ marginRight: 8 }}/>Generate Reports</span>} 
-            hoverable 
-            onClick={() => setActiveModal('reports')}
-        >
-            Generate and export inventory reports.
+    {/* Quick Actions */}
+    <Row gutter={20} style={{ marginBottom: 20 }}>
+      <Col  span={8}>
+        <Card className="crudCard addCard" title={<span><PlusCircleOutlined style={{ marginRight: 8 }}/>Add Item</span>} hoverable onClick={() => setActiveModal('add')}>
+          Quickly add new stock to your inventory.
         </Card>
-        </Col>
-        </Row>
-        
+      </Col>
+      <Col span={8}>
+        <Card className="crudCard checkCard" title={<span><SearchOutlined style={{ marginRight: 8 }}/>Check Stocks</span>} hoverable onClick={() => { fetchItems(); setActiveModal('stocks'); }}>
+          View current inventory levels.
+        </Card>
+      </Col>
+      <Col span={8}>
+        <Card className="crudCard editCard" title={<span><EditOutlined style={{ marginRight: 8 }}/>Update Item</span>} hoverable onClick={() => { fetchItems(); setActiveModal('update'); }}>
+          Edit or delete existing stock.
+        </Card>
+      </Col>
+    </Row>
+
+    {/* Reports */}
+    <Row gutter={16}>
+      <Col span={24}>
+        <Card className="reportsCard" title={<span><CloudDownloadOutlined/>Reports</span>} hoverable onClick={() => setActiveModal('reports')}>
+          Generate and export inventory reports.
+        </Card>
+      </Col>
+    </Row>
+  </Col>
+
+  {/* Right side: Recent Activity Table */}
+  <Col className="columnCard" span={10}>
+    <Card className="recentActivities" title={<span><ClockCircleOutlined />Recent Activity</span>}>
+      <Table
+        dataSource={recentActions}
+        columns={activityColumns}
+        rowKey={(record, index) => index}
+        pagination={false}
+        scroll={{y: 525}}
+        size="small"
+      />
+    </Card>
+  </Col>
+</Row>
 
         <Modal
             title="Reports"
@@ -214,7 +255,6 @@ const exportToPDF = (data) => {
         </Form>
       </Modal>
 
-      {/* Stocks Modal (no actions) */}
       <Modal
         title="Available Stocks"
         open={activeModal === 'stocks'}
@@ -225,7 +265,6 @@ const exportToPDF = (data) => {
         <Table dataSource={items} columns={viewColumns} rowKey="id" pagination={{ pageSize: 5 }} />
       </Modal>
 
-      {/* Update Item Modal (with actions) */}
       <Modal
         title="Update Item"
         open={activeModal === 'update'}
@@ -249,19 +288,30 @@ const exportToPDF = (data) => {
       price: editingItem?.price,
     }}
     onFinish={async (values) => {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.put(`http://localhost:3001/api/items/${editingItem.id}`, values, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        message.success('Item updated successfully!');
-        fetchItems(); // refresh table
-        setIsEditModalVisible(false);
-      } catch (err) {
-        console.error('Error updating item:', err);
-        message.error('Failed to update item');
-      }
-    }}
+  try {
+    const token = localStorage.getItem('token');
+    await axios.put(`http://localhost:3001/api/items/${editingItem.id}`, values, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    message.success('Item updated successfully!');
+    fetchItems();
+    setIsEditModalVisible(false);
+
+    setRecentActions(prev => [
+      {
+        name: username,
+        action: `Edited ${editingItem.itemName}`,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+      },
+      ...prev
+    ]);
+  } catch (err) {
+    console.error('Error updating item:', err);
+    message.error('Failed to update item');
+  }
+}}
+
   >
     <Form.Item
       label="Quantity"
@@ -284,7 +334,7 @@ const exportToPDF = (data) => {
     </Form.Item>
   </Form>
 </Modal>
-
+    
     </div>
   );
 };
